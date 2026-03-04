@@ -146,9 +146,9 @@ def setup():
 
     # Create fixed users
     user1 = User(username="Ishika",
-                 password=generate_password_hash("ishika@13"))
+                 password=generate_password_hash("Ishika@13"))
     user2 = User(username="Shreyash",
-                 password=generate_password_hash("shreyash@30"))
+                 password=generate_password_hash("Shreyash@30"))
 
     db.session.add(user1)
     db.session.add(user2)
