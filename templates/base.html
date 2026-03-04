@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project AURA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">PROJECT AURA</div>
+
+    {% if current_user.is_authenticated %}
+    <div class="user-info">
+        {{ current_user.username }} | {{ current_user.score }} pts
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    {% endif %}
+</nav>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

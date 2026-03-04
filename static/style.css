@@ -1,0 +1,82 @@
+body {
+    background-color: rgb(86, 5, 200);
+    color: white;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.container {
+    padding: 40px;
+}
+
+.challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.challenge-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.challenge-box {
+    max-width: 600px;
+}
+
+.login-box {
+    max-width: 400px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.score-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.score-table th,
+.score-table td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
+.center {
+    margin-top: 20px;
+}
+
+.flash {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.logo{
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.login-box{
+    padding-left: 500px;
+    padding-top: 120px;
+}
+
+.login-box h2{
+    padding-left: 60px;
+    font-family:'Courier New', Courier, monospace;
+}
