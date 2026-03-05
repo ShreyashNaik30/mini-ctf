@@ -148,96 +148,94 @@ def setup():
     if User.query.first():
         return "Database already initialized"
 
+    # Create users
     user1 = User(username="Ishika",
                  password=generate_password_hash("ishika@13"))
+
     user2 = User(username="Shreyash",
                  password=generate_password_hash("shreyash@30"))
 
     db.session.add(user1)
     db.session.add(user2)
 
-    db.session.commit()
-
-    return "Setup complete!"
-
-    # Add 9 challenges (example first one)
+    # Create challenges
     challenges = [
 
     Challenge(
-    title="Boot Sequence Recovery",
-    description="Find next number: 3,8,15,24,35,?",
-    flag="48",
-    points=50,
-    level=1
+        title="Boot Sequence Recovery",
+        description="Find next number: 3,8,15,24,35,?",
+        flag="48",
+        points=50,
+        level=1
     ),
 
     Challenge(
-    title="Memory Parser",
-    description="Reverse string and remove vowels from 'Artificial'",
-    flag="ltrfcrA",
-    points=75,
-    level=2
+        title="Memory Parser",
+        description="Reverse string and remove vowels from 'Artificial'",
+        flag="ltrfcrA",
+        points=75,
+        level=2
     ),
 
     Challenge(
-    title="Signal Decoder",
-    description="Decode: QVVSQXtzaWduYWxfZGVjb2RlZH0=",
-    flag="AURA{signal_decoded}",
-    points=100,
-    level=3
+        title="Signal Decoder",
+        description="Decode: QVVSQXtzaWduYWxfZGVjb2RlZH0=",
+        flag="AURA{signal_decoded}",
+        points=100,
+        level=3
     ),
 
     Challenge(
-    title="Logic Engine",
-    description="5 machines make 5 chips in 5 minutes. How long for 100 machines?",
-    flag="5",
-    points=100,
-    level=4
+        title="Logic Engine",
+        description="5 machines make 5 chips in 5 minutes. How long for 100 machines?",
+        flag="5",
+        points=100,
+        level=4
     ),
 
     Challenge(
-    title="Pattern Analyzer",
-    description="Triangle Square Triangle Square Triangle ?",
-    flag="square",
-    points=125,
-    level=5
+        title="Pattern Analyzer",
+        description="Triangle Square Triangle Square Triangle ?",
+        flag="square",
+        points=125,
+        level=5
     ),
 
     Challenge(
-    title="Hidden Console",
-    description="Inspect the HTML source for the flag.",
-    flag="AURA{hidden_console}",
-    points=150,
-    level=6
+        title="Hidden Console",
+        description="Inspect the HTML source for the flag.",
+        flag="AURA{hidden_console}",
+        points=150,
+        level=6
     ),
 
     Challenge(
-    title="Encryption Node",
-    description="DXUD{hqfubswlrq_rqolqh}",
-    flag="AURA{encryption_online}",
-    points=175,
-    level=7
+        title="Encryption Node",
+        description="DXUD{hqfubswlrq_rqolqh}",
+        flag="AURA{encryption_online}",
+        points=175,
+        level=7
     ),
 
     Challenge(
-    title="System Patch",
-    description="Fix code: return a-b → ?",
-    flag="return a+b",
-    points=200,
-    level=8
+        title="System Patch",
+        description="Fix code: return a-b → ?",
+        flag="return a+b",
+        points=200,
+        level=8
     ),
 
     Challenge(
-    title="Core Vault",
-    description="Final system unlock key",
-    flag="AURA{core_unlocked}",
-    points=300,
-    level=9
+        title="Core Vault",
+        description="Final system unlock key",
+        flag="AURA{core_unlocked}",
+        points=300,
+        level=9
     )
 
     ]
 
-    db.session.bulk_save_objects(challenges)
+    db.session.add_all(challenges)
     db.session.commit()
 
     return "Setup complete!"
