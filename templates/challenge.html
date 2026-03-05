@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="challenge-wrapper">
+    <div class="challenge-box">
+        <div class="terminal-line">CHALLENGE_MODULE::{{ challenge.level }}</div>
+
+        <div class="challenge-header">
+            <span class="ch-level">LEVEL {{ challenge.level }}</span>
+            <span class="ch-points">{{ challenge.points }} PTS</span>
+        </div>
+
+        <h2 class="ch-title">{{ challenge.title }}</h2>
+        <div class="divider"></div>
+
+        <div class="ch-desc">
+            <span class="prompt">&gt;&gt;</span>
+            {{ challenge.description }}
+        </div>
+
+        <form method="POST" class="flag-form">
+            <div class="input-group">
+                <label><span class="prompt">&gt;</span> SUBMIT_FLAG</label>
+                <input type="text" name="flag" placeholder="FLAG{...}" autocomplete="off" required>
+            </div>
+            <button type="submit" class="btn-primary">
+                <span>SUBMIT</span>
+                <span class="btn-arrow">⚡</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="back-link">
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary">← BACK TO DASHBOARD</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -81,6 +81,11 @@ def logout():
 # --------------------
 
 @app.route("/")
+def home():
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/dashboard")
 @login_required
 def dashboard():
     challenges = Challenge.query.filter(

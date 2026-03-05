@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="dashboard-header">
+    <div class="terminal-line">MISSION_CONTROL::CHALLENGE_MATRIX</div>
+    <h2>ACTIVE CHALLENGES</h2>
+    <p class="sub-text">Complete challenges to unlock higher levels. Flags are case-sensitive.</p>
+</div>
+
+<div class="challenge-grid">
+{% for challenge in challenges %}
+    <div class="challenge-card level-{{ challenge.level }}">
+        <div class="card-header">
+            <span class="card-level">LVL {{ challenge.level }}</span>
+            <span class="card-points">{{ challenge.points }} PTS</span>
+        </div>
+        <h3 class="card-title">{{ challenge.title }}</h3>
+        <div class="card-tag">CHALLENGE_{{ challenge.id }}</div>
+        <a href="{{ url_for('challenge', id=challenge.id) }}" class="card-btn">
+            OPEN CHALLENGE →
+        </a>
+    </div>
+{% endfor %}
+</div>
+
+<div class="dashboard-footer">
+    <a href="{{ url_for('scoreboard') }}" class="btn-secondary">
+        📊 VIEW SCOREBOARD
+    </a>
+</div>
+
+<!-- AURA{hidden_console} -->
+{% endblock %}

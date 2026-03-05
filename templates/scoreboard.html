@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="scoreboard-wrapper">
+    <div class="terminal-line">SYSTEM::LEADERBOARD_ACCESS</div>
+    <h2>SCOREBOARD</h2>
+    <div class="divider"></div>
+
+    <table class="score-table">
+        <thead>
+            <tr>
+                <th>RANK</th>
+                <th>AGENT</th>
+                <th>SCORE</th>
+                <th>LEVEL</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        <tr class="{% if loop.index == 1 %}rank-first{% elif loop.index == 2 %}rank-second{% endif %} {% if user.username == current_user.username %}current-user{% endif %}">
+            <td class="rank-cell">
+                {% if loop.index == 1 %}👑{% elif loop.index == 2 %}⚡{% else %}#{{ loop.index }}{% endif %}
+            </td>
+            <td class="name-cell">&gt; {{ user.username }}</td>
+            <td class="score-cell">{{ user.score }} <span class="pts">PTS</span></td>
+            <td class="level-cell">LVL {{ user.level }}</td>
+            <td class="status-cell">
+                {% if user.level >= 9 %}
+                    <span class="status-elite">ELITE</span>
+                {% elif user.level >= 5 %}
+                    <span class="status-advanced">ADVANCED</span>
+                {% else %}
+                    <span class="status-active">ACTIVE</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="dashboard-footer">
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary">← BACK TO DASHBOARD</a>
+    </div>
+</div>
+
+{% endblock %}
