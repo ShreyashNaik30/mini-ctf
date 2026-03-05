@@ -2,32 +2,166 @@
 {% block content %}
 
 <div class="login-wrapper">
-    <div class="login-box">
+    <div class="login-box" id="loginBox">
         <div class="login-header">
             <div class="terminal-line">SYSTEM::AUTH_MODULE</div>
             <h2>ACCESS TERMINAL</h2>
             <div class="divider"></div>
         </div>
 
-        <form method="POST" class="login-form">
+        <div class="error-bar" id="errorBar">
+            <span class="error-icon">⚠</span>
+            <span id="errorText">AUTHENTICATION FAILED — INVALID CREDENTIALS</span>
+        </div>
+
+        <form id="loginForm" class="login-form">
             <div class="input-group">
                 <label><span class="prompt">&gt;</span> AGENT_ID</label>
-                <input type="text" name="username" placeholder="enter username" autocomplete="off" required>
+                <input type="text" name="username" id="username" placeholder="enter username" autocomplete="off" required>
             </div>
             <div class="input-group">
                 <label><span class="prompt">&gt;</span> PASSKEY</label>
-                <input type="password" name="password" placeholder="••••••••••" required>
+                <input type="password" name="password" id="password" placeholder="••••••••••" required>
             </div>
-            <button type="submit" class="btn-primary">
-                <span>AUTHENTICATE</span>
-                <span class="btn-arrow">→</span>
+            <button type="submit" class="btn-primary" id="authBtn">
+                <span id="btnText">AUTHENTICATE</span>
+                <span class="btn-arrow" id="btnArrow">→</span>
             </button>
         </form>
 
         <div class="login-footer">
-            <span class="blink-dot"></span> SECURE CHANNEL ACTIVE
+            <span class="blink-dot" id="statusDot"></span>
+            <span id="statusText">SECURE CHANNEL ACTIVE</span>
         </div>
     </div>
 </div>
+
+<style>
+.error-bar {
+    display: none;
+    background: rgba(255, 77, 109, 0.08);
+    border: 1px solid #ff4d6d;
+    border-left: 3px solid #ff4d6d;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: #ff4d6d;
+    letter-spacing: 1px;
+    animation: slideDown 0.3s ease;
+}
+.error-bar.visible { display: flex; align-items: center; gap: 10px; }
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.error-icon { font-size: 1rem; animation: blink 1s infinite; }
+
+/* Shake the whole login box */
+.login-box.shake {
+    animation: loginShake 0.4s ease;
+}
+@keyframes loginShake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-10px); }
+    40%       { transform: translateX(10px); }
+    60%       { transform: translateX(-6px); }
+    80%       { transform: translateX(6px); }
+}
+
+/* Red border flash on inputs */
+.input-group input.error {
+    border-bottom-color: #ff4d6d;
+    background: rgba(255,77,109,0.05);
+}
+
+/* Loading state */
+#authBtn.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+</style>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('authBtn');
+    const btnText = document.getElementById('btnText');
+    const btnArrow = document.getElementById('btnArrow');
+    const errorBar = document.getElementById('errorBar');
+    const loginBox = document.getElementById('loginBox');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // Loading state
+    btn.classList.add('loading');
+    btnText.textContent = 'AUTHENTICATING...';
+    btnArrow.textContent = '⟳';
+    errorBar.classList.remove('visible');
+    usernameInput.classList.remove('error');
+    passwordInput.classList.remove('error');
+
+    const formData = new FormData();
+    formData.append('username', usernameInput.value);
+    formData.append('password', passwordInput.value);
+
+    const response = await fetch('/login', {
+        method: 'POST',
+        body: formData
+    });
+
+    // If redirected to dashboard = success, just follow it
+    if (response.redirected) {
+        window.location.href = response.url;
+        return;
+    }
+
+    const text = await response.text();
+
+    if (text.includes('Invalid') || text.includes('invalid')) {
+        // Reset button
+        btn.classList.remove('loading');
+        btnText.textContent = 'AUTHENTICATE';
+        btnArrow.textContent = '→';
+
+        // Show error bar
+        errorBar.classList.add('visible');
+
+        // Shake the box
+        loginBox.classList.remove('shake');
+        void loginBox.offsetWidth; // reflow trick to re-trigger animation
+        loginBox.classList.add('shake');
+
+        // Red inputs
+        usernameInput.classList.add('error');
+        passwordInput.classList.add('error');
+        passwordInput.value = '';
+        passwordInput.focus();
+
+        // Update status
+        statusDot.style.background = '#ff4d6d';
+        statusDot.style.boxShadow = '0 0 6px #ff4d6d';
+        statusText.textContent = 'ACCESS DENIED';
+        statusText.style.color = '#ff4d6d';
+
+        // Reset status after 3s
+        setTimeout(() => {
+            statusDot.style.background = '';
+            statusDot.style.boxShadow = '';
+            statusText.textContent = 'SECURE CHANNEL ACTIVE';
+            statusText.style.color = '';
+            usernameInput.classList.remove('error');
+            passwordInput.classList.remove('error');
+        }, 3000);
+
+    } else {
+        // Probably logged in, parse and redirect
+        window.location.href = '/dashboard';
+    }
+});
+</script>
 
 {% endblock %}

@@ -18,10 +18,10 @@
             {{ challenge.description }}
         </div>
 
-        <form method="POST" class="flag-form">
+        <form method="POST" class="flag-form" id="flagForm">
             <div class="input-group">
                 <label><span class="prompt">&gt;</span> SUBMIT_FLAG</label>
-                <input type="text" name="flag" placeholder="FLAG{...}" autocomplete="off" required>
+                <input type="text" name="flag" id="flagInput" placeholder="FLAG{...}" autocomplete="off" required>
             </div>
             <button type="submit" class="btn-primary">
                 <span>SUBMIT</span>
@@ -34,5 +34,156 @@
         <a href="{{ url_for('dashboard') }}" class="btn-secondary">← BACK TO DASHBOARD</a>
     </div>
 </div>
+
+<!-- POPUP OVERLAY -->
+<div class="popup-overlay" id="popupOverlay">
+    <div class="popup-box" id="popupBox">
+        <div class="popup-icon" id="popupIcon"></div>
+        <div class="popup-title" id="popupTitle"></div>
+        <div class="popup-msg" id="popupMsg"></div>
+        <div class="popup-actions">
+            <button class="btn-primary" id="popupBtn">CONTINUE</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(6px);
+}
+.popup-overlay.active {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+}
+.popup-box {
+    background: #071520;
+    border: 1px solid #0d2535;
+    max-width: 460px;
+    width: 90%;
+    padding: 48px 40px;
+    text-align: center;
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.popup-box.correct {
+    border-top: 3px solid #00f5d4;
+    box-shadow: 0 0 60px rgba(0,245,212,0.2);
+}
+.popup-box.wrong {
+    border-top: 3px solid #ff4d6d;
+    box-shadow: 0 0 60px rgba(255,77,109,0.2);
+    animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), shake 0.4s ease 0.3s;
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+}
+.popup-icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    animation: iconPop 0.4s ease 0.2s both;
+}
+@keyframes iconPop {
+    from { transform: scale(0); } to { transform: scale(1); }
+}
+.popup-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+}
+.popup-box.correct .popup-title {
+    color: #00f5d4;
+    animation: glitch 0.4s ease 0.3s both;
+}
+.popup-box.wrong .popup-title { color: #ff4d6d; }
+@keyframes glitch {
+    0% { text-shadow: none; }
+    20% { text-shadow: -2px 0 #ff4d6d, 2px 0 #00f5d4; }
+    40% { text-shadow: 2px 0 #ff4d6d, -2px 0 #00f5d4; }
+    60% { text-shadow: -1px 0 #f5a623; }
+    100% { text-shadow: 0 0 10px #00f5d4; }
+}
+.popup-msg {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: #4a7a8a;
+    line-height: 1.6;
+    margin-bottom: 28px;
+}
+.popup-actions { display: flex; justify-content: center; }
+</style>
+
+<script>
+document.getElementById('flagForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const flag = document.getElementById('flagInput').value;
+    const formData = new FormData();
+    formData.append('flag', flag);
+
+    const response = await fetch(window.location.href, {
+        method: 'POST',
+        body: formData
+    });
+    const text = await response.text();
+
+    const overlay = document.getElementById('popupOverlay');
+    const box = document.getElementById('popupBox');
+    const icon = document.getElementById('popupIcon');
+    const title = document.getElementById('popupTitle');
+    const msg = document.getElementById('popupMsg');
+    const btn = document.getElementById('popupBtn');
+
+    box.className = 'popup-box';
+
+    if (text.includes('Correct') || text.includes('🎉')) {
+        box.classList.add('correct');
+        icon.textContent = '🎉';
+        title.textContent = 'FLAG CAPTURED';
+        msg.textContent = 'Access granted. Points awarded. Proceed to next challenge.';
+        btn.textContent = 'NEXT CHALLENGE →';
+        btn.onclick = () => window.location.href = "{{ url_for('dashboard') }}";
+    } else {
+        box.classList.add('wrong');
+        icon.textContent = '❌';
+        title.textContent = 'ACCESS DENIED';
+        msg.textContent = 'Incorrect flag. Analyze the challenge again and try a different approach.';
+        btn.textContent = 'TRY AGAIN';
+        btn.onclick = closePopup;
+    }
+    overlay.classList.add('active');
+});
+
+function closePopup() {
+    document.getElementById('popupOverlay').classList.remove('active');
+    document.getElementById('flagInput').value = '';
+    document.getElementById('flagInput').focus();
+}
+
+document.getElementById('popupOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePopup();
+});
+</script>
 
 {% endblock %}
